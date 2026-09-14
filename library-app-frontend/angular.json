@@ -8,7 +8,12 @@
   "projects": {
     "library-app-frontend": {
       "projectType": "application",
-      "schematics": {},
+      "schematics": {
+        "@schematics/angular:component": { "type": "component" },
+        "@schematics/angular:service": { "type": "service" },
+        "@schematics/angular:module": { "typeSeparator": "." },
+        "@schematics/angular:pipe": { "typeSeparator": "." }
+      },
       "root": "",
       "sourceRoot": "src",
       "prefix": "app",
