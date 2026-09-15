@@ -12,7 +12,7 @@ CREATE TABLE book (
     title       VARCHAR(200) NOT NULL,
     author      VARCHAR(150) NOT NULL,
     isbn        VARCHAR(13) UNIQUE,
-    available   BOOLEAN NOT NULL DEFAULT TRUE
+    available   BOOLEAN NOT NULL DEFAULT TRUE,
     category_id INT NOT NULL REFERENCES category(id),
     created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     modified_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
