@@ -6,3 +6,7 @@
     box-shadow: var(--mat-sys-level2);
     overflow: hidden;
 }
+
+.cancel-button {
+  background-color: red !important;
+}

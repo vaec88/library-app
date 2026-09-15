@@ -1,3 +1,8 @@
 .active {
     background-color: var(--mat-sys-secondary-container);
+    border-radius: 0 !important;
+}
+
+.mat-mdc-list-item {
+    border-radius: 0 !important;
 }
