@@ -1,0 +1,68 @@
+<h2 mat-dialog-title>{{ $isEdit() ? 'Edit Client' : 'New Client' }}</h2>
+
+<form [formRoot]="clientForm.$form" (submit)="operate()">
+
+    <mat-dialog-content>
+
+        <mat-form-field>
+            <mat-label>First Name</mat-label>
+            <input matInput placeholder="First Name" [formField]="clientForm.$form.firstName" />
+            @if (clientForm.$form.firstName().errors().some(error => error.kind === 'required') && clientForm.$form.firstName().touched()) {
+                <small class="invalid">Is required</small>
+            }
+            @if (clientForm.$form.firstName().errors().some(error => error.kind === 'maxLength') && clientForm.$form.firstName().touched()) {
+                <small class="invalid">maxLength is 100</small>
+            }
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>Last Name</mat-label>
+            <input matInput placeholder="Last Name" [formField]="clientForm.$form.lastName" />
+            @if (clientForm.$form.lastName().errors().some(error => error.kind === 'required') && clientForm.$form.lastName().touched()) {
+                <small class="invalid">Is required</small>
+            }
+            @if (clientForm.$form.lastName().errors().some(error => error.kind === 'maxLength') && clientForm.$form.lastName().touched()) {
+                <small class="invalid">maxLength is 100</small>
+            }
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>ID Number</mat-label>
+            <input matInput placeholder="ID Number" [formField]="clientForm.$form.idNumber" />
+            @if (clientForm.$form.idNumber().errors().some(error => error.kind === 'required') && clientForm.$form.idNumber().touched()) {
+                <small class="invalid">Is required</small>
+            }
+            @if (clientForm.$form.idNumber().errors().some(error => error.kind === 'maxLength') && clientForm.$form.idNumber().touched()) {
+                <small class="invalid">maxLength is 10</small>
+            }
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>Email</mat-label>
+            <input matInput placeholder="Email" [formField]="clientForm.$form.email" />
+            @if (clientForm.$form.email().errors().some(error => error.kind === 'required') && clientForm.$form.email().touched()) {
+                <small class="invalid">Is required</small>
+            }
+            @if (clientForm.$form.email().errors().some(error => error.kind === 'email') && clientForm.$form.email().touched()) {
+                <small class="invalid">Invalid email format</small>
+            }
+            @if (clientForm.$form.email().errors().some(error => error.kind === 'maxLength') && clientForm.$form.email().touched()) {
+                <small class="invalid">maxLength is 150</small>
+            }
+        </mat-form-field>
+
+    </mat-dialog-content>
+
+    <mat-dialog-actions align="end">
+        <button mat-flat-button type="submit" [disabled]="clientForm.isInvalid()">
+            <span>Ok</span>
+            <mat-icon>done</mat-icon>
+        </button>
+
+        <button mat-flat-button type="button" class="cancel-button" (click)="cancel()">
+            <span>Cancel</span>
+            <mat-icon>cancel</mat-icon>
+        </button>
+    </mat-dialog-actions>
+
+</form>

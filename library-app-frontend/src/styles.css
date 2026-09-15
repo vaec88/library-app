@@ -1,1 +1,8 @@
 /* You can add global styles to this file, and also import other style files */
+
+.mat-shadow-2 {
+    background-color: var(--mat-sys-surface-container-low);
+    border-radius: var(--mat-sys-corner-medium);
+    box-shadow: var(--mat-sys-level2);
+    overflow: hidden;
+}
