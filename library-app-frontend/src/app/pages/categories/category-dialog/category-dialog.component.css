@@ -1,0 +1,17 @@
+mat-dialog-content {
+    display: flex;
+    flex-direction: column;
+}
+
+mat-slide-toggle {
+    margin: 0.5rem 0 1rem;
+}
+
+.invalid {
+    color: var(--mat-sys-error);
+}
+
+.cancel-button {
+    background-color: var(--mat-sys-error);
+    color: var(--mat-sys-on-error);
+}

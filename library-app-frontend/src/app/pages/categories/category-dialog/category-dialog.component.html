@@ -1,0 +1,42 @@
+<h2 mat-dialog-title>{{ $isEdit() ? 'Edit Category' : 'New Category' }}</h2>
+
+<form [formRoot]="categoryForm.$form" (submit)="operate()">
+
+    <mat-dialog-content>
+
+        <mat-form-field>
+            <mat-label>Name</mat-label>
+            <input matInput placeholder="Name" [formField]="categoryForm.$form.name" />
+            @if (categoryForm.$form.name().errors().some(error => error.kind === 'required') && categoryForm.$form.name().touched()) {
+                <small class="invalid">Is required</small>
+            }
+            @if (categoryForm.$form.name().errors().some(error => error.kind === 'maxLength') && categoryForm.$form.name().touched()) {
+                <small class="invalid">maxLength is 100</small>
+            }
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>Description</mat-label>
+            <textarea matInput rows="3" placeholder="Description" [formField]="categoryForm.$form.description"></textarea>
+            @if (categoryForm.$form.description().errors().some(error => error.kind === 'maxLength') && categoryForm.$form.description().touched()) {
+                <small class="invalid">maxLength is 255</small>
+            }
+        </mat-form-field>
+
+        <mat-slide-toggle [formField]="categoryForm.$form.status">Active</mat-slide-toggle>
+
+    </mat-dialog-content>
+
+    <mat-dialog-actions align="end">
+        <button mat-flat-button type="submit" [disabled]="categoryForm.isInvalid()">
+            <span>Ok</span>
+            <mat-icon>done</mat-icon>
+        </button>
+
+        <button mat-flat-button type="button" class="cancel-button" (click)="cancel()">
+            <span>Cancel</span>
+            <mat-icon>cancel</mat-icon>
+        </button>
+    </mat-dialog-actions>
+
+</form>
