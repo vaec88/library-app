@@ -87,7 +87,12 @@ public abstract class BaseEntity {
 @EqualsAndHashCode.Include
 private Integer id;
 ```
-- For the rest of the fields, use the `@Column` annotation with their respective validation properties `(nullable = false, length = 100)`
+- For the rest of the fields, use the `@Column` annotation with their respective validation properties `(nullable = false, length = 100)` and others
+- Initialize the default values ​​in the field declaration and in the `@Column` annotation using the `columnDefinition` property.
+```java
+@Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
+private Boolean active = true;
+```
 
 ## Repository
 - A generic repository for the CRUD methods that extends of `JpaRepository`
@@ -247,13 +252,16 @@ public class UserRestController {
 ## Mapper
 - A model mapper config to convert from Entity to Dto and vice versa
 - Add a dedicated mapper bean only when STRICT matching with explicit renames or nested mappings is required
+- Avoid null values ​​from the source (DTO) from overwriting default values ​​in the destination (Entity).
 ```java
 @Configuration
 public class MapperConfig {
 
 	@Bean
     public ModelMapper defaultMapper() {
-        return new ModelMapper();
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setPropertyCondition(Conditions.isNotNull());
+        return modelMapper;
     }
 }
 ```
@@ -296,6 +304,7 @@ public interface OnUpdate {
 - Do not add new framework abstractions for a standard CRUD resource.
 - Do not change shared CRUD, exception, or behavior unless the request requires it.
 - Do not hardcode secrets or environment-specific URLs; use `application.yaml` with `${ENV_VAR:default}` placeholders.
+- Avoid redundant default parameter value assignment. Example, do not this -> `@Column(length = 255)` and others.
 
 ## Output
 Report the added and changed files, the endpoint contract, and the verification result in the implementation section

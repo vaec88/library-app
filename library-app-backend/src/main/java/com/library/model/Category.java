@@ -25,9 +25,9 @@ public class Category extends BaseEntity {
     @Column(nullable = false, length = 100)
     private String name;
 
-    @Column(length = 255)
+    @Column
     private String description;
 
-    @Column(nullable = false)
-    private Boolean status;
+    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
+    private Boolean status = true;
 }

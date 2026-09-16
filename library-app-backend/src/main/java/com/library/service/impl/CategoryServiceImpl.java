@@ -20,14 +20,6 @@ public class CategoryServiceImpl extends CrudServiceImpl<Category, Integer> impl
     }
 
     @Override
-    public Category save(Category entity) {
-        if (entity.getStatus() == null) {
-            entity.setStatus(Boolean.TRUE);
-        }
-        return categoryRepository.save(entity);
-    }
-
-    @Override
     public Category update(Integer id, Category entity) {
         Category categoryFound = categoryRepository.findById(id).orElseThrow(() -> new ModelNotFoundException("Id not found: " + id));
         if (entity.getName() != null) {
