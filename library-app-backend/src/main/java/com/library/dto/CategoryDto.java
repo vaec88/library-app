@@ -2,6 +2,7 @@ package com.library.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.library.util.NullOrNotBlank;
 import com.library.util.OnCreate;
 import com.library.util.OnUpdate;
 import jakarta.validation.constraints.NotBlank;
@@ -20,9 +21,11 @@ public class CategoryDto {
     private Integer id;
 
     @NotBlank(groups = OnCreate.class)
+    @NullOrNotBlank(groups = OnUpdate.class)
     @Size(max = 100, groups = {OnCreate.class, OnUpdate.class})
     private String name;
 
+    @NullOrNotBlank(groups = OnUpdate.class)
     @Size(max = 255, groups = {OnCreate.class, OnUpdate.class})
     private String description;
 

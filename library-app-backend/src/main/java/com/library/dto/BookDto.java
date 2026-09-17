@@ -2,6 +2,7 @@ package com.library.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.library.util.NullOrNotBlank;
 import com.library.util.OnCreate;
 import com.library.util.OnUpdate;
 import jakarta.validation.constraints.NotBlank;
@@ -21,13 +22,16 @@ public class BookDto {
     private Integer id;
 
     @NotBlank(groups = OnCreate.class)
+    @NullOrNotBlank(groups = OnUpdate.class)
     @Size(max = 200, groups = {OnCreate.class, OnUpdate.class})
     private String title;
 
     @NotBlank(groups = OnCreate.class)
+    @NullOrNotBlank(groups = OnUpdate.class)
     @Size(max = 150, groups = {OnCreate.class, OnUpdate.class})
     private String author;
 
+    @NullOrNotBlank(groups = OnUpdate.class)
     @Size(max = 13, groups = {OnCreate.class, OnUpdate.class})
     private String isbn;
 

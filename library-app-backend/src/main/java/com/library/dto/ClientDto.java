@@ -2,6 +2,7 @@ package com.library.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.library.util.NullOrNotBlank;
 import com.library.util.OnCreate;
 import com.library.util.OnUpdate;
 import jakarta.validation.constraints.Email;
@@ -21,14 +22,17 @@ public class ClientDto {
     private Integer id;
 
     @NotBlank(groups = OnCreate.class)
+    @NullOrNotBlank(groups = OnUpdate.class)
     @Size(max = 100, groups = {OnCreate.class, OnUpdate.class})
     private String firstName;
 
     @NotBlank(groups = OnCreate.class)
+    @NullOrNotBlank(groups = OnUpdate.class)
     @Size(max = 100, groups = {OnCreate.class, OnUpdate.class})
     private String lastName;
 
     @NotBlank(groups = OnCreate.class)
+    @NullOrNotBlank(groups = OnUpdate.class)
     @Size(max = 10, groups = {OnCreate.class, OnUpdate.class})
     private String idNumber;
 
