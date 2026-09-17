@@ -1,8 +1,10 @@
 package com.library.service.impl;
 
 import com.library.dto.CategoryDto;
+import com.library.exception.CategoryStatusException;
 import com.library.exception.ModelNotFoundException;
 import com.library.model.Category;
+import com.library.repository.IBookRepository;
 import com.library.repository.ICategoryRepository;
 import com.library.repository.IGenericRepository;
 import com.library.service.ICategoryService;
@@ -14,6 +16,8 @@ import org.springframework.stereotype.Service;
 public class CategoryServiceImpl extends CrudServiceImpl<Category, Integer> implements ICategoryService {
 
     private final ICategoryRepository categoryRepository;
+
+    private final IBookRepository bookRepository;
 
     @Override
     protected IGenericRepository<Category, Integer> getRepository() {
@@ -30,6 +34,9 @@ public class CategoryServiceImpl extends CrudServiceImpl<Category, Integer> impl
             categoryFound.setDescription(categoryDto.getDescription());
         }
         if (categoryDto.getStatus() != null) {
+            if (!categoryDto.getStatus() && bookRepository.existsByCategory(categoryFound)) {
+                throw new CategoryStatusException("This category has books and cannot be disabled");
+            }
             categoryFound.setStatus(categoryDto.getStatus());
         }
         return categoryRepository.save(categoryFound);

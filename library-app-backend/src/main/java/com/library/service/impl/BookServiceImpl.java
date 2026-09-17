@@ -1,6 +1,7 @@
 package com.library.service.impl;
 
 import com.library.dto.BookDto;
+import com.library.exception.CategoryStatusException;
 import com.library.exception.ModelNotFoundException;
 import com.library.model.Book;
 import com.library.model.Category;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 public class BookServiceImpl extends CrudServiceImpl<Book, Integer> implements IBookService {
 
     private final IBookRepository bookRepository;
+
     private final ICategoryService categoryService;
 
     @Override
@@ -55,6 +57,10 @@ public class BookServiceImpl extends CrudServiceImpl<Book, Integer> implements I
         if (categoryId == null) {
             throw new ModelNotFoundException("Category id not found: null");
         }
-        return categoryService.findById(categoryId);
+        Category category = categoryService.findById(categoryId);
+        if (Boolean.FALSE.equals(category.getStatus())) {
+            throw new CategoryStatusException("This category is disabled and cannot be assigned to a book");
+        }
+        return category;
     }
 }
