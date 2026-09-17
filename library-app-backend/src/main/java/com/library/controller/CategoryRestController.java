@@ -56,7 +56,7 @@ public class CategoryRestController {
 
     @PutMapping("/{id}")
     public ResponseEntity<CategoryDto> update(@PathVariable Integer id, @Validated(OnUpdate.class) @RequestBody CategoryDto categoryDto) {
-        return ResponseEntity.ok(toDto(service.update(id, toEntity(categoryDto))));
+        return ResponseEntity.ok(toDto(service.update(id, categoryDto)));
     }
 
     @DeleteMapping("/{id}")

@@ -10,7 +10,5 @@ public interface ICrudService<T, K> {
 
     T save(T entity);
 
-    T update(K id, T entity);
-
     void delete(K id);
 }

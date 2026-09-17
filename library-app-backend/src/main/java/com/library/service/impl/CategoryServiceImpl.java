@@ -1,5 +1,6 @@
 package com.library.service.impl;
 
+import com.library.dto.CategoryDto;
 import com.library.exception.ModelNotFoundException;
 import com.library.model.Category;
 import com.library.repository.ICategoryRepository;
@@ -20,16 +21,16 @@ public class CategoryServiceImpl extends CrudServiceImpl<Category, Integer> impl
     }
 
     @Override
-    public Category update(Integer id, Category entity) {
+    public Category update(Integer id, CategoryDto categoryDto) {
         Category categoryFound = categoryRepository.findById(id).orElseThrow(() -> new ModelNotFoundException("Id not found: " + id));
-        if (entity.getName() != null) {
-            categoryFound.setName(entity.getName());
+        if (categoryDto.getName() != null) {
+            categoryFound.setName(categoryDto.getName());
         }
-        if (entity.getDescription() != null) {
-            categoryFound.setDescription(entity.getDescription());
+        if (categoryDto.getDescription() != null) {
+            categoryFound.setDescription(categoryDto.getDescription());
         }
-        if (entity.getStatus() != null) {
-            categoryFound.setStatus(entity.getStatus());
+        if (categoryDto.getStatus() != null) {
+            categoryFound.setStatus(categoryDto.getStatus());
         }
         return categoryRepository.save(categoryFound);
     }

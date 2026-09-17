@@ -56,7 +56,7 @@ public class ClientRestController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ClientDto> update(@PathVariable Integer id, @Validated(OnUpdate.class) @RequestBody ClientDto clientDto) {
-        return ResponseEntity.ok(toDto(service.update(id, toEntity(clientDto))));
+        return ResponseEntity.ok(toDto(service.update(id, clientDto)));
     }
 
     @DeleteMapping("/{id}")

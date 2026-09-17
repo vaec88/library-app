@@ -1,12 +1,13 @@
 package com.library.service.impl;
 
+import com.library.dto.BookDto;
 import com.library.exception.ModelNotFoundException;
 import com.library.model.Book;
 import com.library.model.Category;
 import com.library.repository.IBookRepository;
-import com.library.repository.ICategoryRepository;
 import com.library.repository.IGenericRepository;
 import com.library.service.IBookService;
+import com.library.service.ICategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +16,7 @@ import org.springframework.stereotype.Service;
 public class BookServiceImpl extends CrudServiceImpl<Book, Integer> implements IBookService {
 
     private final IBookRepository bookRepository;
-    private final ICategoryRepository categoryRepository;
+    private final ICategoryService categoryService;
 
     @Override
     protected IGenericRepository<Book, Integer> getRepository() {
@@ -30,22 +31,22 @@ public class BookServiceImpl extends CrudServiceImpl<Book, Integer> implements I
     }
 
     @Override
-    public Book update(Integer id, Book entity) {
+    public Book update(Integer id, BookDto bookDto) {
         Book bookFound = bookRepository.findById(id).orElseThrow(() -> new ModelNotFoundException("Id not found: " + id));
-        if (entity.getTitle() != null) {
-            bookFound.setTitle(entity.getTitle());
+        if (bookDto.getTitle() != null) {
+            bookFound.setTitle(bookDto.getTitle());
         }
-        if (entity.getAuthor() != null) {
-            bookFound.setAuthor(entity.getAuthor());
+        if (bookDto.getAuthor() != null) {
+            bookFound.setAuthor(bookDto.getAuthor());
         }
-        if (entity.getIsbn() != null) {
-            bookFound.setIsbn(entity.getIsbn());
+        if (bookDto.getIsbn() != null) {
+            bookFound.setIsbn(bookDto.getIsbn());
         }
-        if (entity.getAvailable() != null) {
-            bookFound.setAvailable(entity.getAvailable());
+        if (bookDto.getAvailable() != null) {
+            bookFound.setAvailable(bookDto.getAvailable());
         }
-        if (entity.getCategory() != null && entity.getCategory().getId() != null) {
-            bookFound.setCategory(findCategory(entity.getCategory().getId()));
+        if (bookDto.getCategoryId() != null) {
+            bookFound.setCategory(findCategory(bookDto.getCategoryId()));
         }
         return bookRepository.save(bookFound);
     }
@@ -54,7 +55,6 @@ public class BookServiceImpl extends CrudServiceImpl<Book, Integer> implements I
         if (categoryId == null) {
             throw new ModelNotFoundException("Category id not found: null");
         }
-        return categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new ModelNotFoundException("Category id not found: " + categoryId));
+        return categoryService.findById(categoryId);
     }
 }

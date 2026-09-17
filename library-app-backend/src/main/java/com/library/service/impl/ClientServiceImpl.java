@@ -1,5 +1,6 @@
 package com.library.service.impl;
 
+import com.library.dto.ClientDto;
 import com.library.exception.ModelNotFoundException;
 import com.library.model.Client;
 import com.library.repository.IClientRepository;
@@ -20,19 +21,19 @@ public class ClientServiceImpl extends CrudServiceImpl<Client, Integer> implemen
     }
 
     @Override
-    public Client update(Integer id, Client entity) {
+    public Client update(Integer id, ClientDto clientDto) {
         Client clientFound = clientRepository.findById(id).orElseThrow(() -> new ModelNotFoundException("Id not found: " + id));
-        if (entity.getFirstName() != null) {
-            clientFound.setFirstName(entity.getFirstName());
+        if (clientDto.getFirstName() != null) {
+            clientFound.setFirstName(clientDto.getFirstName());
         }
-        if (entity.getLastName() != null) {
-            clientFound.setLastName(entity.getLastName());
+        if (clientDto.getLastName() != null) {
+            clientFound.setLastName(clientDto.getLastName());
         }
-        if (entity.getIdNumber() != null) {
-            clientFound.setIdNumber(entity.getIdNumber());
+        if (clientDto.getIdNumber() != null) {
+            clientFound.setIdNumber(clientDto.getIdNumber());
         }
-        if (entity.getEmail() != null) {
-            clientFound.setEmail(entity.getEmail());
+        if (clientDto.getEmail() != null) {
+            clientFound.setEmail(clientDto.getEmail());
         }
         return clientRepository.save(clientFound);
     }
