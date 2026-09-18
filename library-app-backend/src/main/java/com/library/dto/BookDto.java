@@ -31,7 +31,7 @@ public class BookDto {
     @Size(max = 150, groups = {OnCreate.class, OnUpdate.class})
     private String author;
 
-    @NullOrNotBlank(groups = OnUpdate.class)
+    @NullOrNotBlank(groups = {OnCreate.class, OnUpdate.class})
     @Size(max = 13, groups = {OnCreate.class, OnUpdate.class})
     private String isbn;
 
