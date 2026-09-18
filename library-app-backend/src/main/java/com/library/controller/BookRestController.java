@@ -56,7 +56,7 @@ public class BookRestController {
 
     @PutMapping("/{id}")
     public ResponseEntity<BookDto> update(@PathVariable Integer id, @Validated(OnUpdate.class) @RequestBody BookDto bookDto) {
-        return ResponseEntity.ok(toDto(service.update(id, bookDto)));
+        return ResponseEntity.ok(toDto(service.update(id, toEntity(bookDto))));
     }
 
     @DeleteMapping("/{id}")

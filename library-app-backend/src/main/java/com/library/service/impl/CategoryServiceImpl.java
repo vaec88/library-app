@@ -1,6 +1,5 @@
 package com.library.service.impl;
 
-import com.library.dto.CategoryDto;
 import com.library.exception.CategoryStatusException;
 import com.library.exception.ModelNotFoundException;
 import com.library.model.Category;
@@ -25,19 +24,19 @@ public class CategoryServiceImpl extends CrudServiceImpl<Category, Integer> impl
     }
 
     @Override
-    public Category update(Integer id, CategoryDto categoryDto) {
+    public Category update(Integer id, Category category) {
         Category categoryFound = categoryRepository.findById(id).orElseThrow(() -> new ModelNotFoundException("Id not found: " + id));
-        if (categoryDto.getName() != null) {
-            categoryFound.setName(categoryDto.getName());
+        if (category.getName() != null) {
+            categoryFound.setName(category.getName());
         }
-        if (categoryDto.getDescription() != null) {
-            categoryFound.setDescription(categoryDto.getDescription());
+        if (category.getDescription() != null) {
+            categoryFound.setDescription(category.getDescription());
         }
-        if (categoryDto.getStatus() != null) {
-            if (!categoryDto.getStatus() && bookRepository.existsByCategory(categoryFound)) {
+        if (category.getStatus() != null) {
+            if (!category.getStatus() && bookRepository.existsByCategory(categoryFound)) {
                 throw new CategoryStatusException("This category has books and cannot be disabled");
             }
-            categoryFound.setStatus(categoryDto.getStatus());
+            categoryFound.setStatus(category.getStatus());
         }
         return categoryRepository.save(categoryFound);
     }

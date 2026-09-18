@@ -1,6 +1,5 @@
 package com.library.service.impl;
 
-import com.library.dto.BookDto;
 import com.library.exception.CategoryStatusException;
 import com.library.exception.ModelNotFoundException;
 import com.library.model.Book;
@@ -33,22 +32,22 @@ public class BookServiceImpl extends CrudServiceImpl<Book, Integer> implements I
     }
 
     @Override
-    public Book update(Integer id, BookDto bookDto) {
+    public Book update(Integer id, Book book) {
         Book bookFound = bookRepository.findById(id).orElseThrow(() -> new ModelNotFoundException("Id not found: " + id));
-        if (bookDto.getTitle() != null) {
-            bookFound.setTitle(bookDto.getTitle());
+        if (book.getTitle() != null) {
+            bookFound.setTitle(book.getTitle());
         }
-        if (bookDto.getAuthor() != null) {
-            bookFound.setAuthor(bookDto.getAuthor());
+        if (book.getAuthor() != null) {
+            bookFound.setAuthor(book.getAuthor());
         }
-        if (bookDto.getIsbn() != null) {
-            bookFound.setIsbn(bookDto.getIsbn());
+        if (book.getIsbn() != null) {
+            bookFound.setIsbn(book.getIsbn());
         }
-        if (bookDto.getAvailable() != null) {
-            bookFound.setAvailable(bookDto.getAvailable());
+        if (book.getAvailable() != null) {
+            bookFound.setAvailable(book.getAvailable());
         }
-        if (bookDto.getCategoryId() != null) {
-            bookFound.setCategory(findCategory(bookDto.getCategoryId()));
+        if (book.getCategory() != null && book.getCategory().getId() != null) {
+            bookFound.setCategory(findCategory(book.getCategory().getId()));
         }
         return bookRepository.save(bookFound);
     }
