@@ -5,11 +5,12 @@ import com.library.exception.ModelNotFoundException;
 import com.library.model.Book;
 import com.library.model.Category;
 import com.library.repository.IBookRepository;
+import com.library.repository.ICategoryRepository;
 import com.library.repository.IGenericRepository;
 import com.library.service.IBookService;
-import com.library.service.ICategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -17,13 +18,14 @@ public class BookServiceImpl extends CrudServiceImpl<Book, Integer> implements I
 
     private final IBookRepository bookRepository;
 
-    private final ICategoryService categoryService;
+    private final ICategoryRepository categoryRepository;
 
     @Override
     protected IGenericRepository<Book, Integer> getRepository() {
         return bookRepository;
     }
 
+    @Transactional
     @Override
     public Book save(Book entity) {
         Integer categoryId = entity.getCategory() != null ? entity.getCategory().getId() : null;
@@ -31,6 +33,7 @@ public class BookServiceImpl extends CrudServiceImpl<Book, Integer> implements I
         return bookRepository.save(entity);
     }
 
+    @Transactional
     @Override
     public Book update(Integer id, Book book) {
         Book bookFound = bookRepository.findById(id).orElseThrow(() -> new ModelNotFoundException("Id not found: " + id));
@@ -56,7 +59,9 @@ public class BookServiceImpl extends CrudServiceImpl<Book, Integer> implements I
         if (categoryId == null) {
             throw new ModelNotFoundException("Category id not found: null");
         }
-        Category category = categoryService.findById(categoryId);
+        Category category = categoryRepository
+                .findById(categoryId)
+                .orElseThrow(() -> new ModelNotFoundException("Id not found: " + categoryId));
         if (Boolean.FALSE.equals(category.getStatus())) {
             throw new CategoryStatusException("This category is disabled and cannot be assigned to a book");
         }

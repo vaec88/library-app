@@ -7,6 +7,7 @@ import com.library.repository.IGenericRepository;
 import com.library.service.IClientService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +20,7 @@ public class ClientServiceImpl extends CrudServiceImpl<Client, Integer> implemen
         return clientRepository;
     }
 
+    @Transactional
     @Override
     public Client update(Integer id, Client client) {
         Client clientFound = clientRepository.findById(id).orElseThrow(() -> new ModelNotFoundException("Id not found: " + id));

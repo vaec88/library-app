@@ -9,6 +9,7 @@ import com.library.repository.IGenericRepository;
 import com.library.service.ICategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +24,7 @@ public class CategoryServiceImpl extends CrudServiceImpl<Category, Integer> impl
         return categoryRepository;
     }
 
+    @Transactional
     @Override
     public Category update(Integer id, Category category) {
         Category categoryFound = categoryRepository.findById(id).orElseThrow(() -> new ModelNotFoundException("Id not found: " + id));
