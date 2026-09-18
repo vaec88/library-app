@@ -36,7 +36,9 @@ public class BookServiceImpl extends CrudServiceImpl<Book, Integer> implements I
     @Transactional
     @Override
     public Book update(Integer id, Book book) {
-        Book bookFound = bookRepository.findById(id).orElseThrow(() -> new ModelNotFoundException("Id not found: " + id));
+        Book bookFound = bookRepository
+                .findById(id)
+                .orElseThrow(() -> new ModelNotFoundException("Book id not found: " + id));
         if (book.getTitle() != null) {
             bookFound.setTitle(book.getTitle());
         }
@@ -61,7 +63,7 @@ public class BookServiceImpl extends CrudServiceImpl<Book, Integer> implements I
         }
         Category category = categoryRepository
                 .findById(categoryId)
-                .orElseThrow(() -> new ModelNotFoundException("Id not found: " + categoryId));
+                .orElseThrow(() -> new ModelNotFoundException("Category id not found: " + categoryId));
         if (Boolean.FALSE.equals(category.getStatus())) {
             throw new CategoryStatusException("This category is disabled and cannot be assigned to a book");
         }

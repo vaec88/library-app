@@ -23,7 +23,9 @@ public class ClientServiceImpl extends CrudServiceImpl<Client, Integer> implemen
     @Transactional
     @Override
     public Client update(Integer id, Client client) {
-        Client clientFound = clientRepository.findById(id).orElseThrow(() -> new ModelNotFoundException("Id not found: " + id));
+        Client clientFound = clientRepository
+                .findById(id)
+                .orElseThrow(() -> new ModelNotFoundException("Client id not found: " + id));
         if (client.getFirstName() != null) {
             clientFound.setFirstName(client.getFirstName());
         }

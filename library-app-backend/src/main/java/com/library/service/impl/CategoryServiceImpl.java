@@ -27,7 +27,9 @@ public class CategoryServiceImpl extends CrudServiceImpl<Category, Integer> impl
     @Transactional
     @Override
     public Category update(Integer id, Category category) {
-        Category categoryFound = categoryRepository.findById(id).orElseThrow(() -> new ModelNotFoundException("Id not found: " + id));
+        Category categoryFound = categoryRepository
+                .findById(id)
+                .orElseThrow(() -> new ModelNotFoundException("Category id not found: " + id));
         if (category.getName() != null) {
             categoryFound.setName(category.getName());
         }
