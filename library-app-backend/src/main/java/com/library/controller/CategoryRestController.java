@@ -5,6 +5,7 @@ import com.library.model.Category;
 import com.library.service.ICategoryService;
 import com.library.util.OnCreate;
 import com.library.util.OnUpdate;
+import jakarta.validation.groups.Default;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -44,7 +45,7 @@ public class CategoryRestController {
     }
 
     @PostMapping
-    public ResponseEntity<CategoryDto> save(@Validated(OnCreate.class) @RequestBody CategoryDto categoryDto) {
+    public ResponseEntity<CategoryDto> save(@Validated({Default.class, OnCreate.class}) @RequestBody CategoryDto categoryDto) {
         Category saved = service.save(toEntity(categoryDto));
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()

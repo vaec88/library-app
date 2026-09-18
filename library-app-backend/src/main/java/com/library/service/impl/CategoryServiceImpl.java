@@ -44,4 +44,16 @@ public class CategoryServiceImpl extends CrudServiceImpl<Category, Integer> impl
         }
         return categoryRepository.save(categoryFound);
     }
+
+    @Transactional
+    @Override
+    public void delete(Integer id) {
+        Category categoryFound = categoryRepository
+                .findById(id)
+                .orElseThrow(() -> new ModelNotFoundException("Category id not found: " + id));
+        if (bookRepository.existsByCategory(categoryFound)) {
+            throw new CategoryStatusException("This category has books and cannot be deleted");
+        }
+        categoryRepository.delete(categoryFound);
+    }
 }

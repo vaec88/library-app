@@ -5,6 +5,7 @@ import com.library.model.Book;
 import com.library.service.IBookService;
 import com.library.util.OnCreate;
 import com.library.util.OnUpdate;
+import jakarta.validation.groups.Default;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -44,7 +45,7 @@ public class BookRestController {
     }
 
     @PostMapping
-    public ResponseEntity<BookDto> save(@Validated(OnCreate.class) @RequestBody BookDto bookDto) {
+    public ResponseEntity<BookDto> save(@Validated({Default.class, OnCreate.class}) @RequestBody BookDto bookDto) {
         Book saved = service.save(toEntity(bookDto));
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()

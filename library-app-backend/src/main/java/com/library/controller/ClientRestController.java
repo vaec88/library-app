@@ -5,6 +5,7 @@ import com.library.model.Client;
 import com.library.service.IClientService;
 import com.library.util.OnCreate;
 import com.library.util.OnUpdate;
+import jakarta.validation.groups.Default;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -44,7 +45,7 @@ public class ClientRestController {
     }
 
     @PostMapping
-    public ResponseEntity<ClientDto> save(@Validated(OnCreate.class) @RequestBody ClientDto clientDto) {
+    public ResponseEntity<ClientDto> save(@Validated({Default.class, OnCreate.class}) @RequestBody ClientDto clientDto) {
         Client saved = service.save(toEntity(clientDto));
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
