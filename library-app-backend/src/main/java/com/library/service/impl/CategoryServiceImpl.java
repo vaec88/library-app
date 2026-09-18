@@ -37,7 +37,7 @@ public class CategoryServiceImpl extends CrudServiceImpl<Category, Integer> impl
             categoryFound.setDescription(category.getDescription());
         }
         if (category.getStatus() != null) {
-            if (!category.getStatus() && bookRepository.existsByCategory(categoryFound)) {
+            if (!category.getStatus() && bookRepository.existsByCategoryId(categoryFound.getId())) {
                 throw new CategoryStatusException("This category has books and cannot be disabled");
             }
             categoryFound.setStatus(category.getStatus());
@@ -51,7 +51,7 @@ public class CategoryServiceImpl extends CrudServiceImpl<Category, Integer> impl
         Category categoryFound = categoryRepository
                 .findById(id)
                 .orElseThrow(() -> new ModelNotFoundException("Category id not found: " + id));
-        if (bookRepository.existsByCategory(categoryFound)) {
+        if (bookRepository.existsByCategoryId(categoryFound.getId())) {
             throw new CategoryStatusException("This category has books and cannot be deleted");
         }
         categoryRepository.delete(categoryFound);
