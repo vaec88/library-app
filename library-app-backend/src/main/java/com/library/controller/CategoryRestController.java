@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -38,6 +39,11 @@ public class CategoryRestController {
     @GetMapping
     public ResponseEntity<Page<CategoryDto>> findAll(Pageable pageable) {
         return ResponseEntity.ok(service.findAll(pageable).map(this::toDto));
+    }
+
+    @GetMapping("/status/{status}")
+    public ResponseEntity<List<CategoryDto>> findByStatus(@PathVariable Boolean status) {
+        return ResponseEntity.ok(service.findByStatus(status).stream().map(this::toDto).toList());
     }
 
     @GetMapping("/{id}")

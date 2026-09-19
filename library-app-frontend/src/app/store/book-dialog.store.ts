@@ -5,7 +5,6 @@ import { Book } from '../models/book';
 import { Category } from '../models/category';
 import { BookService } from '../services/book.service';
 import { CategoryService } from '../services/category.service';
-import { emptyPageResponse, PageResponse } from '../shared/models/page-response';
 
 @Service({ autoProvided: false })
 export class BookDialogStore {
@@ -22,16 +21,15 @@ export class BookDialogStore {
 
     readonly bookResource = httpResource<Book>(() => this.$bookRequest());
 
-    readonly categoryResource = httpResource<PageResponse<Category>>(
+    readonly categoryResource = httpResource<Category[]>(
         () => ({
-            url: this.categoryService.resourceUrl,
-            params: { page: 0, size: 100 }
+            url: `${this.categoryService.resourceUrl}/status/true`
         }),
-        { defaultValue: emptyPageResponse<Category>() }
+        { defaultValue: [] }
     );
 
     readonly $categories = computed(
-        () => this.categoryResource.value().content.filter((category) => category.status)
+        () => this.categoryResource.value()
     );
 
     setId(id: number | null) {
