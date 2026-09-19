@@ -9,6 +9,8 @@ import jakarta.validation.groups.Default;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -22,7 +24,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -35,8 +36,8 @@ public class CategoryRestController {
     private final ModelMapper mapper;
 
     @GetMapping
-    public ResponseEntity<List<CategoryDto>> findAll() {
-        return ResponseEntity.ok(service.findAll().stream().map(this::toDto).toList());
+    public ResponseEntity<Page<CategoryDto>> findAll(Pageable pageable) {
+        return ResponseEntity.ok(service.findAll(pageable).map(this::toDto));
     }
 
     @GetMapping("/{id}")

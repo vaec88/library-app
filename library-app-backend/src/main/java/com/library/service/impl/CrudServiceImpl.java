@@ -3,16 +3,16 @@ package com.library.service.impl;
 import com.library.exception.ModelNotFoundException;
 import com.library.repository.IGenericRepository;
 import com.library.service.ICrudService;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public abstract class CrudServiceImpl<T, K> implements ICrudService<T, K> {
 
     protected abstract IGenericRepository<T, K> getRepository();
 
     @Override
-    public List<T> findAll() {
-        return getRepository().findAll();
+    public Page<T> findAll(Pageable pageable) {
+        return getRepository().findAll(pageable);
     }
 
     @Override

@@ -1,10 +1,11 @@
 package com.library.service;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface ICrudService<T, K> {
 
-    List<T> findAll();
+    Page<T> findAll(Pageable pageable);
 
     T findById(K id);
 
