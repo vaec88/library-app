@@ -34,6 +34,8 @@ public class Category extends BaseEntity {
 
     @PrePersist
     public void prePersist() {
-        status = true;
+        if (status == null) {
+            status = true;
+        }
     }
 }

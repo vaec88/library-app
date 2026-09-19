@@ -43,6 +43,8 @@ public class Book extends BaseEntity {
 
     @PrePersist
     public void prePersist() {
-        available = true;
+        if (available == null) {
+            available = true;
+        }
     }
 }
