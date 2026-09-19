@@ -47,7 +47,9 @@
 
   <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of clients"
     [length]="$totalElements()"
-    [pageSize]="5"
+    [pageSize]="$pageRequest().size"
+    [pageIndex]="$pageRequest().page"
+    (page)="changePage($event)"
   ></mat-paginator>
 
   <button mat-fab style="float: right;" (click)="openDialog(null)">

@@ -10,34 +10,34 @@ import { filter, switchMap, tap } from 'rxjs';
 
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { NotificationService } from '../../../shared/services/notification.service';
-import { Category } from '../../../models/category';
-import { CategoryService } from '../../../services/category.service';
-import { CategoryStore } from '../../../store/category.store';
-import { CategoryDialogComponent } from '../category-dialog/category-dialog.component';
+import { Book } from '../../../models/book';
+import { BookService } from '../../../services/book.service';
+import { BookStore } from '../../../store/book.store';
+import { BookDialogComponent } from '../book-dialog/book-dialog.component';
 
 @Component({
-  selector: 'app-category-list',
+  selector: 'app-book-list',
   imports: [MatTableModule, MatSortModule, MatPaginatorModule, MatButtonModule, MatIconModule],
-  providers: [CategoryStore],
-  templateUrl: './category-list.component.html',
-  styleUrl: './category-list.component.css'
+  providers: [BookStore],
+  templateUrl: './book-list.component.html',
+  styleUrl: './book-list.component.css'
 })
-export class CategoryListComponent {
+export class BookListComponent {
 
-  private readonly categoryService = inject(CategoryService);
-  private readonly categoryStore = inject(CategoryStore);
+  private readonly bookService = inject(BookService);
+  private readonly bookStore = inject(BookStore);
   private readonly dialog = inject(MatDialog);
 
-  protected readonly dataSource = new MatTableDataSource<Category>();
+  protected readonly dataSource = new MatTableDataSource<Book>();
   protected readonly $sort = viewChild(MatSort);
   private readonly snackBar = inject(MatSnackBar);
   private readonly notificationService = inject(NotificationService);
 
-  protected $categories = this.categoryStore.$categories;
-  protected $pageRequest = this.categoryStore.$pageRequest;
-  protected $totalElements = this.categoryStore.$totalElements;
+  protected $books = this.bookStore.$books;
+  protected $pageRequest = this.bookStore.$pageRequest;
+  protected $totalElements = this.bookStore.$totalElements;
 
-  protected displayedColumns: string[] = ['id', 'name', 'description', 'status', 'actions'];
+  protected displayedColumns: string[] = ['id', 'title', 'author', 'isbn', 'available', 'categoryName', 'actions'];
 
   constructor() {
     this.setupTableEffect();
@@ -46,7 +46,7 @@ export class CategoryListComponent {
 
   private setupTableEffect() {
     effect(() => {
-      const data = this.$categories();
+      const data = this.$books();
       const sort = this.$sort();
 
       this.dataSource.data = data;
@@ -66,10 +66,10 @@ export class CategoryListComponent {
 
   openDialog(id: number | null) {
     this.dialog
-      .open(CategoryDialogComponent, { width: '450px', data: { id } })
+      .open(BookDialogComponent, { width: '450px', data: { id } })
       .afterClosed()
       .pipe(filter((saved) => saved))
-      .subscribe(() => this.categoryStore.reload());
+      .subscribe(() => this.bookStore.reload());
   }
 
   delete(id: number) {
@@ -78,13 +78,13 @@ export class CategoryListComponent {
       .afterClosed()
       .pipe(
         filter((confirmed) => confirmed),
-        switchMap(() => this.categoryService.delete(id)),
+        switchMap(() => this.bookService.delete(id)),
         tap(() => this.notificationService.notify('Deleted'))
       )
-      .subscribe(() => this.categoryStore.reload());
+      .subscribe(() => this.bookStore.reload());
   }
 
   changePage(event: PageEvent) {
-    this.categoryStore.change(event.pageIndex, event.pageSize);
+    this.bookStore.change(event.pageIndex, event.pageSize);
   }
 }

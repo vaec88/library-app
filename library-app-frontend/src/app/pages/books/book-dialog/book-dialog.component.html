@@ -1,0 +1,65 @@
+<h2 mat-dialog-title>{{ $isEdit() ? 'Edit Book' : 'New Book' }}</h2>
+
+<form [formRoot]="bookForm.$form" (submit)="operate()">
+
+    <mat-dialog-content>
+
+        <mat-form-field>
+            <mat-label>Title</mat-label>
+            <input matInput placeholder="Title" [formField]="bookForm.$form.title" />
+            @if (bookForm.$form.title().errors().some(error => error.kind === 'required') && bookForm.$form.title().touched()) {
+                <small class="invalid">Is required</small>
+            }
+            @if (bookForm.$form.title().errors().some(error => error.kind === 'maxLength') && bookForm.$form.title().touched()) {
+                <small class="invalid">maxLength is 200</small>
+            }
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>Author</mat-label>
+            <input matInput placeholder="Author" [formField]="bookForm.$form.author" />
+            @if (bookForm.$form.author().errors().some(error => error.kind === 'required') && bookForm.$form.author().touched()) {
+                <small class="invalid">Is required</small>
+            }
+            @if (bookForm.$form.author().errors().some(error => error.kind === 'maxLength') && bookForm.$form.author().touched()) {
+                <small class="invalid">maxLength is 150</small>
+            }
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>ISBN</mat-label>
+            <input matInput placeholder="ISBN" [formField]="bookForm.$form.isbn" />
+            @if (bookForm.$form.isbn().errors().some(error => error.kind === 'maxLength') && bookForm.$form.isbn().touched()) {
+                <small class="invalid">maxLength is 13</small>
+            }
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>Category</mat-label>
+            <mat-select placeholder="Category" [formField]="bookForm.$form.categoryId">
+                @for (category of $categories(); track category.id) {
+                    <mat-option [value]="category.id">{{ category.name }}</mat-option>
+                }
+            </mat-select>
+            @if (bookForm.$form.categoryId().errors().some(error => error.kind === 'required') && bookForm.$form.categoryId().touched()) {
+                <small class="invalid">Is required</small>
+            }
+        </mat-form-field>
+
+        <mat-slide-toggle [formField]="bookForm.$form.available">Available</mat-slide-toggle>
+
+    </mat-dialog-content>
+
+    <mat-dialog-actions align="end">
+        <button mat-flat-button type="submit" [disabled]="bookForm.isInvalid()">
+            <span>Ok</span>
+            <mat-icon>done</mat-icon>
+        </button>
+
+        <button mat-flat-button type="button" class="cancel-button" (click)="cancel()">
+            <span>Cancel</span>
+            <mat-icon>cancel</mat-icon>
+        </button>
+    </mat-dialog-actions>
+
+</form>

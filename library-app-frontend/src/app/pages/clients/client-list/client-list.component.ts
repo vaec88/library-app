@@ -2,7 +2,7 @@ import { Component, effect, inject, viewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -29,12 +29,12 @@ export class ClientListComponent {
   private readonly dialog = inject(MatDialog);
 
   protected readonly dataSource = new MatTableDataSource<Client>();
-  protected readonly $paginator = viewChild(MatPaginator);
   protected readonly $sort = viewChild(MatSort);
   private readonly snackBar = inject(MatSnackBar);
   private readonly notificationService = inject(NotificationService);
 
   protected $clients = this.clientStore.$clients;
+  protected $pageRequest = this.clientStore.$pageRequest;
   protected $totalElements = this.clientStore.$totalElements;
 
   protected displayedColumns: string[] = ['id', 'firstName', 'lastName', 'idNumber', 'email', 'actions'];
@@ -48,11 +48,9 @@ export class ClientListComponent {
     effect(() => {
       const data = this.$clients();
       const sort = this.$sort();
-      const paginator = this.$paginator();
 
       this.dataSource.data = data;
       this.dataSource.sort = sort ?? null;
-      this.dataSource.paginator = paginator ?? null;
     });
   }
 
@@ -84,5 +82,9 @@ export class ClientListComponent {
         tap(() => this.notificationService.notify('Deleted'))
       )
       .subscribe(() => this.clientStore.reload());
+  }
+
+  changePage(event: PageEvent) {
+    this.clientStore.change(event.pageIndex, event.pageSize);
   }
 }
