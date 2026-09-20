@@ -14,6 +14,8 @@ export class SidebarComponent {
   protected readonly links = [
     { path: '/pages/categories', label: 'Categories', icon: 'category' },
     { path: '/pages/books', label: 'Books', icon: 'book' },
-    { path: '/pages/clients', label: 'Clients', icon: 'people' }
+    { path: '/pages/clients', label: 'Clients', icon: 'people' },
+    { path: '/pages/reservations', label: 'Reservations', icon: 'bookmark' },
+    { path: '/pages/client-reservations', label: 'Client Reservations', icon: 'manage_search' }
   ];
 }

@@ -1,0 +1,22 @@
+.detail-picker {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.detail-picker mat-form-field {
+    flex: 1;
+}
+
+table {
+    width: 100%;
+}
+
+.cancel-button {
+    background-color: var(--mat-sys-error);
+    color: var(--mat-sys-on-error);
+}
+
+.invalid {
+    color: var(--mat-sys-error);
+}

@@ -253,18 +253,24 @@ The backend answers 409 for an unavailable or duplicated book and 404 for a miss
 
 ## 6. Acceptance criteria
 
-- [ ] Creating a reservation with two available books returns 201 and both books are `available = false` afterwards
-- [ ] Creating a reservation that includes an unavailable book returns 409 and **no** book changed state
-- [ ] Creating a reservation with the same book twice returns 409
-- [ ] Creating a reservation with an empty `details` list returns 400
-- [ ] Deleting a reservation returns 204 and every one of its books is `available = true` again
-- [ ] Updating a reservation to drop one book and add another frees the first and takes the second
-- [ ] Deleting a book that belongs to a reservation returns 409
-- [ ] `GET /v1/reservations?page=0&size=5` returns `{content, page}` and issues a bounded number of queries (entity graphs in place)
-- [ ] `GET /v1/reservations/client/{id}` returns only that client's reservations, paginated
+- [x] Creating a reservation with two available books returns 201 and both books are `available = false` afterwards
+- [x] Creating a reservation that includes an unavailable book returns 409 and **no** book changed state
+- [x] Creating a reservation with the same book twice returns 409
+- [x] Creating a reservation with an empty `details` list returns 400
+- [x] Deleting a reservation returns 204 and every one of its books is `available = true` again
+- [x] Updating a reservation to drop one book and add another frees the first and takes the second
+- [x] Deleting a book that belongs to a reservation returns 409
+- [x] `GET /v1/reservations?page=0&size=5` returns `{content, page}` and issues a bounded number of queries (entity graphs in place)
+- [x] `GET /v1/reservations/client/{id}` returns only that client's reservations, paginated
 - [ ] The list page changes server page on paginator interaction, and the count comes from `page.totalElements`
 - [ ] The dialog cannot submit an empty detail list, and cannot add the same book twice
 - [ ] Editing an existing reservation keeps its current books selectable
+
+The three unticked boxes are browser behaviour. They are implemented (`reservation-list` binds
+`[length]="$totalElements()"` and calls `ReservationStore.change` on `(page)`; the dialog's Ok button is
+disabled while `ReservationForm.isInvalid()` — which includes an empty detail list — and
+`reservation-detail-table` filters already-chosen books out of the picker; `ReservationDialogStore.$books`
+merges the reservation's own books back in) but nothing beyond the production build was run against them.
 
 ## 7. Verification
 
@@ -278,6 +284,82 @@ Both must pass. The ModelMapper check of §4.7 runs without a database. Endpoint
 ## 8. Known gaps this spec does not close
 
 - **No return flow.** A book comes back only by deleting the reservation or removing its line; there is no history of past loans. Adding `returned` / `return_date` to `reservation_detail` is the natural next step and is out of scope here.
-- **Lookup lists are capped at 100.** The client and book pickers page the paginated endpoints with `size=100`, the same limitation as the category picker in `book-dialog`. A dedicated unpaginated lookup endpoint would remove the cap.
+- **The client picker is capped at 100.** `ReservationDialogStore` and `ClientReservationStore` read `/v1/clients?page=0&size=100`, because clients have no lookup endpoint. The book picker no longer has this cap: it uses `GET /v1/books/available/{available}`, which returns a plain list (the same shape as `GET /v1/categories/status/{status}`). Adding `GET /v1/clients` as an unpaginated lookup, or a search-as-you-type field, would close the last cap.
+- **`PUT` cannot clear the detail list.** ModelMapper never produces a `null` collection, so an absent `details` and an empty `details` are indistinguishable on the entity; both are treated as "leave the lines alone". R2 forbids a reservation with no lines anyway, so no valid payload is lost.
 - **No optimistic locking.** Reservations inherit the missing `@Version` on `BaseEntity`, so concurrent edits of the same reservation still last-write-win; the pessimistic lock of §4.5 protects `book.available`, not the reservation row.
 - **No automated tests.** Every rule in §3 is verified by hand.
+
+## 9. Implementation
+
+### 9.1 Delivered files
+
+Backend (`library-app-backend`, package `com.library`) — added:
+
+```
+model/Reservation.java            model/ReservationDetail.java
+dto/ReservationDto.java           dto/ReservationDetailDto.java
+repository/IReservationRepository.java
+repository/IReservationDetailRepository.java
+service/IReservationService.java  service/impl/ReservationServiceImpl.java
+controller/ReservationRestController.java
+exception/ReservationException.java
+```
+
+Backend — changed:
+
+```
+config/MapperConfig.java          PropertyMap<Reservation, ReservationDto> for clientName
+exception/GlobalExceptionHandler.java  ReservationException -> 409
+repository/IBookRepository.java   findByAvailable, findByIdForUpdate (PESSIMISTIC_WRITE)
+service/IBookService.java         findByAvailable
+service/impl/BookServiceImpl.java findByAvailable, delete override (R9)
+controller/BookRestController.java  GET /v1/books/available/{available}
+```
+
+Frontend (`library-app-frontend`) — added:
+
+```
+models/reservation.ts             models/reservation-detail.ts
+forms/reservation.form.ts         services/reservation.service.ts
+store/reservation.store.ts        store/reservation-dialog.store.ts
+store/client-reservation.store.ts
+pages/reservations/reservation-list/reservation-list.component.{ts,html,css}
+pages/reservations/reservation-dialog/reservation-dialog.component.{ts,html,css}
+pages/reservations/reservation-detail-table/reservation-detail-table.component.{ts,html,css}
+pages/reservations/client-reservations/client-reservations.component.{ts,html,css}
+```
+
+Frontend — changed: `pages/pages.routes.ts`, `core/layout/sidebar/sidebar.component.ts`.
+
+### 9.2 Endpoint contract as built
+
+| Method | Path | Body | Success | Errors |
+|---|---|---|---|---|
+| GET | `/v1/reservations?page=&size=` | — | 200 `Page<ReservationDto>` | — |
+| GET | `/v1/reservations/{id}` | — | 200 `ReservationDto` | 404 |
+| GET | `/v1/reservations/client/{clientId}?page=&size=` | — | 200 `Page<ReservationDto>` | 404 client |
+| POST | `/v1/reservations` | `ReservationDto` | 201, `Location`, empty body | 400, 404, 409 |
+| PUT | `/v1/reservations/{id}` | `ReservationDto` | 200 `ReservationDto` | 400, 404, 409 |
+| DELETE | `/v1/reservations/{id}` | — | 204 | 404 |
+| DELETE | `/v1/books/{id}` | — | 204 | 404, 409 `This book has reservations and cannot be deleted` |
+| GET | `/v1/books/available/{available}` | — | 200 `List<BookDto>` | — |
+
+### 9.3 Deviations from the spec
+
+| Deviation | Reason |
+|---|---|
+| The book picker uses `GET /v1/books/available/{available}` instead of §5.3's `/v1/books?page=0&size=100`. | Follows the lookup-endpoint precedent set by `GET /v1/categories/status/{status}` after this spec was written. `ReservationDialogStore.$books` still merges the edited reservation's own (now unavailable) books back into the list, as §5.3 requires. |
+| `MapperConfig` uses `modelMapper.addMappings(new PropertyMap<Reservation, ReservationDto>(){…})` rather than `createTypeMap(...).addMappings(...)`. | `createTypeMap` runs implicit matching immediately, and `clientName` matches both `client.firstName` and `client.lastName` — an ambiguous mapping. `addMappings(PropertyMap)` registers the explicit mapping first, so `clientName` never reaches implicit matching. |
+| §5.1's file list gained `store/client-reservation.store.ts`. | `client-reservations` needs its own client-option resource plus a reservations resource that only fires once a client is chosen; folding that into `ReservationStore` would have made the list page's store conditional. One store per view is the existing project style. |
+| `update` treats an empty `details` list as "no change", not as "clear all lines". | See §8 — the mapper cannot produce a null collection. |
+| `IReservationDetailRepository` is created but unused. | §4.1 lists it. Details are only reached through their reservation. |
+
+### 9.4 Verification
+
+| Step | Result |
+|---|---|
+| `library-app-backend> mvnw.cmd -q -DskipTests compile` | Pass (only the usual Lombok `sun.misc.Unsafe` warnings). |
+| `library-app-frontend> npm run build` | Pass. Initial bundle 554.11 kB, over the 500 kB budget — the same pre-existing warning as before this feature. |
+| ModelMapper check (§4.7) | Pass — the application context starts, so `defaultMapper` builds; `clientName` came back as `"ZZSmoke Tester"` and `details[].bookTitle` as the book titles over HTTP. |
+| Runtime smoke test | Pass — 18/18 checks against the real PostgreSQL database, covering every §6 criterion that is reachable through the API plus R1, R3-on-update and R4. Test data (1 category, 3 books, 1 client, 1 reservation) was created through the API and deleted in reverse order; the database was left with 0 reservations and no leftovers. |
+| Query shape for `GET /v1/reservations?page=0&size=5` | One join-fetch `select` covering `reservation`, `reservation_detail`, `book` and `client` — no per-row query. |

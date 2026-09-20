@@ -1,0 +1,18 @@
+mat-dialog-content {
+    display: flex;
+    flex-direction: column;
+}
+
+app-reservation-detail-table {
+    display: block;
+    margin-top: 1rem;
+}
+
+.invalid {
+    color: var(--mat-sys-error);
+}
+
+.cancel-button {
+    background-color: var(--mat-sys-error);
+    color: var(--mat-sys-on-error);
+}

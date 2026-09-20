@@ -26,6 +26,12 @@ public class GlobalExceptionHandler {
                 .body(ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage()));
     }
 
+    @ExceptionHandler(ReservationException.class)
+    public ResponseEntity<ProblemDetail> handleReservation(ReservationException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage()));
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ProblemDetail> handleValidation(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new LinkedHashMap<>();

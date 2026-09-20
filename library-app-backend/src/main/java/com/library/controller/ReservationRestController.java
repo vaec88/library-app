@@ -1,8 +1,8 @@
 package com.library.controller;
 
-import com.library.dto.BookDto;
-import com.library.model.Book;
-import com.library.service.IBookService;
+import com.library.dto.ReservationDto;
+import com.library.model.Reservation;
+import com.library.service.IReservationService;
 import com.library.util.OnCreate;
 import com.library.util.OnUpdate;
 import jakarta.validation.groups.Default;
@@ -24,36 +24,35 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/v1/books")
-public class BookRestController {
+@RequestMapping("/v1/reservations")
+public class ReservationRestController {
 
-    private final IBookService service;
+    private final IReservationService service;
 
     @Qualifier("defaultMapper")
     private final ModelMapper mapper;
 
     @GetMapping
-    public ResponseEntity<Page<BookDto>> findAll(Pageable pageable) {
+    public ResponseEntity<Page<ReservationDto>> findAll(Pageable pageable) {
         return ResponseEntity.ok(service.findAll(pageable).map(this::toDto));
     }
 
-    @GetMapping("/available/{available}")
-    public ResponseEntity<List<BookDto>> findByAvailable(@PathVariable Boolean available) {
-        return ResponseEntity.ok(service.findByAvailable(available).stream().map(this::toDto).toList());
+    @GetMapping("/client/{clientId}")
+    public ResponseEntity<Page<ReservationDto>> findByClientId(@PathVariable Integer clientId, Pageable pageable) {
+        return ResponseEntity.ok(service.findByClientId(clientId, pageable).map(this::toDto));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BookDto> findById(@PathVariable Integer id) {
+    public ResponseEntity<ReservationDto> findById(@PathVariable Integer id) {
         return ResponseEntity.ok(toDto(service.findById(id)));
     }
 
     @PostMapping
-    public ResponseEntity<BookDto> save(@Validated({Default.class, OnCreate.class}) @RequestBody BookDto bookDto) {
-        Book saved = service.save(toEntity(bookDto));
+    public ResponseEntity<ReservationDto> save(@Validated({Default.class, OnCreate.class}) @RequestBody ReservationDto reservationDto) {
+        Reservation saved = service.save(toEntity(reservationDto));
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
@@ -63,8 +62,8 @@ public class BookRestController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<BookDto> update(@PathVariable Integer id, @Validated(OnUpdate.class) @RequestBody BookDto bookDto) {
-        return ResponseEntity.ok(toDto(service.update(id, toEntity(bookDto))));
+    public ResponseEntity<ReservationDto> update(@PathVariable Integer id, @Validated({Default.class, OnUpdate.class}) @RequestBody ReservationDto reservationDto) {
+        return ResponseEntity.ok(toDto(service.update(id, toEntity(reservationDto))));
     }
 
     @DeleteMapping("/{id}")
@@ -73,11 +72,11 @@ public class BookRestController {
         return ResponseEntity.noContent().build();
     }
 
-    private BookDto toDto(Book book) {
-        return mapper.map(book, BookDto.class);
+    private ReservationDto toDto(Reservation reservation) {
+        return mapper.map(reservation, ReservationDto.class);
     }
 
-    private Book toEntity(BookDto bookDto) {
-        return mapper.map(bookDto, Book.class);
+    private Reservation toEntity(ReservationDto reservationDto) {
+        return mapper.map(reservationDto, Reservation.class);
     }
 }

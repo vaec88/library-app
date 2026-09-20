@@ -2,15 +2,19 @@ package com.library.service.impl;
 
 import com.library.exception.CategoryStatusException;
 import com.library.exception.ModelNotFoundException;
+import com.library.exception.ReservationException;
 import com.library.model.Book;
 import com.library.model.Category;
 import com.library.repository.IBookRepository;
 import com.library.repository.ICategoryRepository;
 import com.library.repository.IGenericRepository;
+import com.library.repository.IReservationRepository;
 import com.library.service.IBookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -20,9 +24,17 @@ public class BookServiceImpl extends CrudServiceImpl<Book, Integer> implements I
 
     private final ICategoryRepository categoryRepository;
 
+    private final IReservationRepository reservationRepository;
+
     @Override
     protected IGenericRepository<Book, Integer> getRepository() {
         return bookRepository;
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<Book> findByAvailable(Boolean available) {
+        return bookRepository.findByAvailable(available);
     }
 
     @Transactional
@@ -55,6 +67,18 @@ public class BookServiceImpl extends CrudServiceImpl<Book, Integer> implements I
             bookFound.setCategory(findCategory(book.getCategory().getId()));
         }
         return bookRepository.save(bookFound);
+    }
+
+    @Transactional
+    @Override
+    public void delete(Integer id) {
+        Book bookFound = bookRepository
+                .findById(id)
+                .orElseThrow(() -> new ModelNotFoundException("Book id not found: " + id));
+        if (reservationRepository.existsByDetailsBookId(bookFound.getId())) {
+            throw new ReservationException("This book has reservations and cannot be deleted");
+        }
+        bookRepository.delete(bookFound);
     }
 
     private Category findCategory(Integer categoryId) {

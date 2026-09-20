@@ -1,0 +1,45 @@
+<h2 mat-dialog-title>{{ $isEdit() ? 'Edit Reservation' : 'New Reservation' }}</h2>
+
+<form [formRoot]="reservationForm.$form" (submit)="operate()">
+
+    <mat-dialog-content>
+
+        <mat-form-field>
+            <mat-label>Client</mat-label>
+            <mat-select placeholder="Client" [formField]="reservationForm.$form.clientId">
+                @for (client of $clients(); track client.id) {
+                    <mat-option [value]="client.id">{{ client.firstName }} {{ client.lastName }}</mat-option>
+                }
+            </mat-select>
+            @if (reservationForm.$form.clientId().errors().some(error => error.kind === 'required') && reservationForm.$form.clientId().touched()) {
+                <small class="invalid">Is required</small>
+            }
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>Reservation Date</mat-label>
+            <input matInput type="datetime-local" placeholder="Reservation Date" [formField]="reservationForm.$form.reservationDate" />
+            <mat-hint>Leave it empty to use the current date</mat-hint>
+        </mat-form-field>
+
+        <app-reservation-detail-table
+            [details]="$details()"
+            [books]="$books()"
+            (detailsChange)="changeDetails($event)"
+        ></app-reservation-detail-table>
+
+    </mat-dialog-content>
+
+    <mat-dialog-actions align="end">
+        <button mat-flat-button type="submit" [disabled]="reservationForm.isInvalid()">
+            <span>Ok</span>
+            <mat-icon>done</mat-icon>
+        </button>
+
+        <button mat-flat-button type="button" class="cancel-button" (click)="cancel()">
+            <span>Cancel</span>
+            <mat-icon>cancel</mat-icon>
+        </button>
+    </mat-dialog-actions>
+
+</form>
