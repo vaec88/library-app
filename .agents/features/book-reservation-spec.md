@@ -50,6 +50,7 @@ The schema has no return date and no status column, so **the reservation row its
 | R8 | Updating a reservation recalculates: books dropped from the detail list are freed (`true`), books added are taken (`false`, after R4/R5), books kept are untouched | — |
 | R9 | A book that appears in any reservation cannot be deleted | 409 `This book has reservations and cannot be deleted` |
 | R10 | `reservation_date` defaults to now when the payload omits it | — |
+| R11 | Create, update and delete run inside a single `@Transactional` unit: either the reservation, its details and the book availability flags all change, or none do. |
 
 R9 extends the rule already applied to categories in `CategoryServiceImpl.delete`, and belongs in `BookServiceImpl.delete`.
 
@@ -65,6 +66,7 @@ model/ReservationDetail.java
 dto/ReservationDto.java
 dto/ReservationDetailDto.java
 repository/IReservationRepository.java
+repository/IReservationDetailRepository.java
 service/IReservationService.java
 service/impl/ReservationServiceImpl.java
 controller/ReservationRestController.java
@@ -73,7 +75,7 @@ exception/ReservationException.java
 
 Changed: `exception/GlobalExceptionHandler.java` (map `ReservationException`), `service/impl/BookServiceImpl.java` (R9), `repository/IBookRepository.java` if a lock query is added.
 
-No `ReservationDetail` controller, service or repository: details are created, replaced and removed through their reservation. (`angular-builder.md` shows a `reservation-detail.service.ts` in its example tree — not needed here, because detail lines travel inside the reservation payload.)
+No `ReservationDetail` controller or service: details are created, replaced and removed through their reservation. (`angular-builder.md` shows a `reservation-detail.service.ts` in its example tree — not needed here, because detail lines travel inside the reservation payload.)
 
 ### 4.2 Model
 
